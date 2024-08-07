@@ -1,34 +1,10 @@
-import React, { useState } from 'react'; // Import React and useState
+import { useState } from 'react'; // Import React and useState
+import confetti from "canvas-confetti"
 
-const TURNS = {
-  X: "x",
-  O: "o"
-}
-
-const Square = ({ children, isSelected, updateBoard, index }) => {
-  const className = `square ${isSelected ? 'is-selected' : ''}`
-
-  const handleClick = () => {
-    updateBoard(index)
-  }
-
-  return (
-    <div onClick={handleClick} className={className}>
-      {children}
-    </div>
-  )
-}
-
-const WINNER_COMBOS = [
-  [0,1,2],
-  [3,4,5],
-  [6,7,8],
-  [0,3,6],
-  [1,4,7],
-  [2,5,8],
-  [0,4,8],
-  [2,4,6]
-]
+import { Square } from "./components/Square"
+import { TURNS } from "./constants.js"
+import { checkWinnerFrom, checkEndGame } from "./logic/board.js"
+import { WinnerModal } from "./components/WinnerModal"
 
 function App() {
   const [board, setBoard] = useState(
@@ -38,24 +14,10 @@ function App() {
   // null es que no hay ganador, false es que hay un empate
   const [winner, setWinner] = useState(null) 
 
-  const checkWnner = (boardToCheck) => {
-    // revisamos todas las conbinaciones ganadoras
-    // para ver si X u O ganó 
-    for (const combo of WINNER_COMBOS) {
-      const [a,b,c] = combo
-      if (
-        boardToCheck[a] && // 0 ---> x u o
-        boardToCheck[a] === boardToCheck[b] && // 0 y 3 ---> x  ---> x u o ---> o
-        boardToCheck[a] === boardToCheck[c] // 0, 3 y
-      )
-      {
-        return boardToCheck[a] // x u o
-      }
-    }
-    {
-      // no hay ganador
-      return null 
-    }
+  const resetGame = () => {
+    setBoard(Array(9).fill(null))
+    setTurn(TURNS.X)
+    setWinner(null)
   }
 
   const updateBoard = (index) => {
@@ -72,21 +34,24 @@ function App() {
     const newTurn = turn === TURNS.X ? TURNS.O : TURNS.X 
     setTurn(newTurn)
     // revisar si hay ganador
-    const newWinner = checkWnner(newBoard)
+    const newWinner = checkWinnerFrom(newBoard)
     if (newWinner) {
+      confetti()
       setWinner(newWinner) // actualiza el estado
-      alert(`El ganador es ${newWinner}`)
+    } else if (checkEndGame(newBoard)) {
+      setWinner(false) // empate
     }
   }
 
   return (
     <main className="board">
       <h1>Tic Tac Toe</h1>
+      <button onClick={resetGame}>Reset del juego</button>
       <section className="game">
-        {board.map((_, index) => {
+        {board.map((square, index) => {
           return (
             <Square key={index} index={index} updateBoard={updateBoard}>
-              {board[index]}
+              {square}
             </Square>
         )
       })
@@ -101,6 +66,9 @@ function App() {
           {TURNS.O}
         </Square>
       </section>
+
+      <WinnerModal resetGame={resetGame} winner={winner} />
+
     </main>
   )
 }
