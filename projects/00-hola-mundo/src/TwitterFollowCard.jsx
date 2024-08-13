@@ -22,7 +22,7 @@ export function TwiterFollowCard({ children, userName }) {
       <header className="tw-followCard-header">
         <img
           className="tw-followCard-avatar"
-          src={"src/assets/img/Mar1el4.JPEG"}
+          src={"src/assets/img/meliodas.jpg"}
           alt="Mar1el4"
         />
         <div className="tw-followCard-info">

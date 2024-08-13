@@ -4,8 +4,8 @@ import { TwiterFollowCard } from "./TwitterFollowCard";
 //Renderesido de usuarios
 const user = [
   {
-    userName: "MAR13L4",
-    name: "Mariela Sandoval González",
+    userName: "Fernanda",
+    name: "Fernanda González",
     isFollowing: true,
   },
   {
